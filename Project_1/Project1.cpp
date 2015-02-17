@@ -23,6 +23,13 @@ int main()
 	float* Sigma5 = new float[25];
 	float* Sigma11 = new float[55];
 	
+	float* rect1 = new float [128];
+	float* rect5 = new float [128];
+	float* rect11 = new float [128];
+	
+	float* Ix1 = new float [128];
+	float* Ix2 = new float [128];
+			
 	Gauss(1.0, 5, Sigma1);
 	Gauss(5.0, 25, Sigma5);	
 	Gauss(11.0, 55, Sigma11);
@@ -45,8 +52,54 @@ int main()
 		fin >> rect[i];
 		}
 	fin.close();
+	///#1///
+	// 1a-sigma 1
+	for (int i = 0; i < 128; i++)
+		{
+		x = 0;
+		y = sig1_Max;
+		
+		if(sig1_Half >= i)
+			{
+			x = sig1_Half - i - 1;  
+			}
+		if(i > 128 - sig1_Half)
+			{
+			y = sig1_Max - (i + 1);
+			}
+			
+		for(int q = x; q < y; q++)
+			{
+			temp = temp + ((Sigma1[q]) * (rect[i - sig1_Half + q + 1]));
+			}
+		
+		rect1[i] = temp;
+		}
+		
+	// 1a-sigma 5
+	for (int i = 0; i < 128; i++)
+		{
+		x = 0;
+		y = sig5_Max;
+		
+		if(sig5_Half >= i)
+			{
+			x = sig5_Half - i - 1;  
+			}
+		if(i > 128 - sig5_Half)
+			{
+			y = sig5_Max - (i + 1);
+			}
+			
+		for(int q = x; q < y; q++)
+			{
+			temp = temp + ((Sigma5[q]) * (rect[i - sig5_Half + q + 1]));
+			}
+		
+		rect[i] = temp;
+		}
 	
-	
+	// 1a-sigma 11
 	for (int i = 0; i < 128; i++)
 		{
 		x = 0;
@@ -66,10 +119,44 @@ int main()
 			temp = temp + ((Sigma11[q]) * (rect[i - sig11_Half + q + 1]));
 			}
 		
-		rect[i] = temp;
-	
+		rect511[i] = temp;
 		}
 	
+	
+	//1b-(Ix * Gx)*Gx
+	for (int i = 0; i < 128; i++)
+		{
+		x = 0;
+		y = sig5_Max;
+		
+		if(sig5_Half >= i)
+			{
+			x = sig5_Half - i - 1;  
+			}
+		if(i > 128 - sig5_Half)
+			{
+			y = sig5_Max - (i + 1);
+			}
+			
+		for(int q = x; q < y; q++)
+			{
+			temp = temp + ((Sigma5[q]) * (rect5[i - sig5_Half + q + 1]));
+			}
+		
+		Ix1[i] = temp;
+		}
+	
+	//1b - Ix * (Gx * Gx)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+			
 	/*for(int i = 0; i < 5; i++)
 		{
 		cout.precision(9);
@@ -87,12 +174,12 @@ int main()
 		cout.precision(9);
 		cout << Sigma11[i] << " ";
 		}
-	cout << endl << endl;*/
+	cout << endl << endl;
 	for(int i = 0; i < 128; i++)
 		{
 		cout.precision(5);
 		cout << rect[i] << " ";
-		}
+		}*/
 	//ReadImage(lenna.pmg, 
 	
 
