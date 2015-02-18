@@ -6,6 +6,11 @@
 #define pi 3.141592653589793
 using namespace std;
 
+
+void ReadImage(char name[], int ***fimage, int& M, int& N, int& Q);
+void WriteImage(char fname[], int **fimage, int M, int N, int Q);
+void Gauss (float s, int Hsize, float * H);
+
 void readFile(float* dest)
 {
 	ifstream fin("Rect_128.txt");
@@ -39,11 +44,6 @@ float* mask(const float* Oigin, int maskSize, const float* mask)
 	}
 	return result;
 }
-
-void ReadImage(char name[], int ***fimage, int& M, int& N, int& Q);
-void WriteImage(char fname[], int **fimage, int M, int N, int Q);
-void Gauss (float s, int Hsize, float * H);
-
 
 
 int main()
@@ -136,21 +136,25 @@ delete[] Sigma5;
 //Number 1 Part C
 ///////////////////////////////////////////////////////////////////////
 int** myImage;
-int*** picture = &myImage;
-int** ImageSig1;
-int** ImageSig5;
-int** ImageSig11;
+int** ImageSig;
+int** TempImage;
 
 char ILFile[20] = "lenna.pgm";
-char OLFile[20] = "Out_Lenna.pgm";
+char OLFile1[20] = "Out_Lenna.pgm";
+char OLFile5[20] = "Out_Lenna5.pgm";
+char OLFile11[20] = "Out_Lenna11.pgm";
+
 int M;
 int N;
 int Q;
+int S = 0;
 
+//Mask Matrix
 float Sig1[5][5];
 float Sig5[25][25];
 float Sig11[55][55];
 
+//1D Gauss
 Sigma1 = new float[5];
 Sigma5 = new float[25];
 Sigma11 = new float[55];
@@ -189,41 +193,239 @@ for(int n = 0; n < 55; n++)
 
 cout << endl << "-------2D Gauss on lenna-------" << endl;
 
-ReadImage(ILFile, picture, M, N, Q);
- 
- *ImageSig1 = new int* [N];
- for(i=0; i<N; i++)
-   (*ImageSig1)[i] = new int[M];
+ReadImage(ILFile, &myImage, M, N, Q);
 
-for(int q = 0; q < 5; q++)
+ImageSig = new int* [N];
+TempImage = new int* [N];															
+for(int i=0; i<N; i++)
 {
-	for(int i = 0; i < 5; i++)
-	{
-		ImageSig1[q][n] =  myImage[q][i]
-	}
+		 (ImageSig)[i] = new int[M];
+		 (TempImage)[i] = new int[M];
+
 }
 
-WriteImage(OLFile, myImage, M,  N,  Q);
 
+//Smoothing of 2D Sigma 1
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 5; z++)
+		{
+			for(int h = 0; h < 5; h++)
+			{
+				if( (r - z + 5 / 2) < 0 || (r - z + 5 / 2) >= N || 
+					(t - h + 5 / 2) < 0 || (t - h + 5 / 2) >= M )
+				{
+					S += 0;
+				}
+				else
+				{
+					S += Sig1[z][h] * myImage[r - z + 5 / 2][t - h + 5 / 2];
+				}
+			}
+		}
+		ImageSig[r][t] = S;
+	}
+}
+WriteImage(OLFile1, ImageSig, M,  N,  Q);
+
+
+//Smoothing of 2D Sigma 5
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 25; z++)
+		{
+			for(int h = 0; h < 25; h++)
+			{
+				if( (r - z + 25 / 2) < 0 || (r - z + 25 / 2) >= N || 
+					(t - h + 25 / 2) < 0 || (t - h + 25 / 2) >= M )
+				{
+					S += 0;
+				}
+				else
+				{
+					S += Sig5[z][h] * myImage[r - z + 25 / 2][t - h + 25 / 2];
+				}
+			}
+		}
+		ImageSig[r][t] = S;
+	}
+}
+WriteImage(OLFile5, ImageSig, M,  N,  Q);
+
+
+//Smoothing  of 2d Sigma 11
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 55; z++)
+		{
+			for(int h = 0; h < 55; h++)
+			{
+				if( (r - z + 55 / 2) < 0 || (r - z + 55 / 2) >= N || 
+					(t - h + 55 / 2) < 0 || (t - h + 55 / 2) >= M )
+				{
+					S += 0;
+				}
+				else
+				{
+					S += Sig11[z][h] * myImage[r - z + 55 / 2][t - h + 55 / 2];
+				}
+			}
+		}
+		ImageSig[r][t] = S;
+	}
+}
+WriteImage(OLFile11, ImageSig, M,  N,  Q);
 
 
 ///////////////////////////////////////////////////////////////////////
-//Number 1 Part C
+//Number 1 Part D
 ///////////////////////////////////////////////////////////////////////
-int A;
-int B;
-int C;
+char File1_1D[20] = "1D_Lenna.pgm";
+char File5_1D[20] = "1D_Lenna5.pgm";
+char File11_1D[20] = "1D_Lenna11.pgm";
 
-char ISFile[20] = "sf.pgm";
-char OSFile[20] = "sf.pgm";
+cout << endl << "-------Using 2 1D Gauss on lenna-------" << endl;
 
-cout << endl << "-------2D using 1D Gauss on SF-------" << endl;
+//Smoothing of 2D Sigma 1
+//Applying mask to rows
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 5; z++)
+		{
+			if( (r - z + 5 / 2) < 0 || (r - z + 5 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma1[z] * myImage[r - z + 5 / 2][t];
+			}
+		}
+		TempImage[r][t] = S;
+	}
+}
+//Applying mask to cols
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 5; z++)
+		{
+			if( (r - z + 5 / 2) < 0 || (r - z + 5 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma1[z] * TempImage[t][r - z + 5 / 2];
+			}
+		}
+		ImageSig[t][r] = S;
+	}
+}
+WriteImage(File1_1D, ImageSig, M,  N,  Q);
 
-ReadImage(ISFile, picture, M, N, Q);
+
+//Smoothing of 2D Sigma 5
+//Applying mask to rows
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 25; z++)
+		{
+			if( (r - z + 25 / 2) < 0 || (r - z + 25 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma5[z] * myImage[r - z + 25 / 2][t];
+			}
+		}
+		TempImage[r][t] = S;
+	}
+}
+//Applying mask to cols
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 25; z++)
+		{
+			if( (r - z + 25 / 2) < 0 || (r - z + 25 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma5[z] * TempImage[t][r - z + 25 / 2];
+			}
+		}
+		ImageSig[t][r] = S;
+	}
+}
+WriteImage(File5_1D, ImageSig, M,  N,  Q);
 
 
-WriteImage(OSFile, myImage, M,  N,  Q);
 
+//Smoothing of 2D Sigma 11
+//Applying mask to rows
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 55; z++)
+		{
+			if( (r - z + 55 / 2) < 0 || (r - z + 55 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma11[z] * myImage[r - z + 55 / 2][t];
+			}
+		}
+		TempImage[r][t] = S;
+	}
+}
+//Applying mask to cols
+for(int t = 0; t < N; t++)
+{
+	for(int r = 0; r < M; r++)
+	{
+		S = 0;
+		for(int z = 0; z < 55; z++)
+		{
+			if( (r - z + 55 / 2) < 0 || (r - z + 55 / 2) >= N)
+			{
+				S += 0;
+			}
+			else
+			{
+				S += Sigma11[z] * TempImage[t][r - z + 55 / 2];
+			}
+		}
+		ImageSig[t][r] = S;
+	}
+}
+WriteImage(File11_1D, ImageSig, M,  N,  Q);
 	return 0;
 	}
 
