@@ -139,15 +139,75 @@ delete[] Sigma5;
 ///////////////////////////////////////////////////////////////////////
 int** myImage;
 int*** picture = &myImage;
-char PFile[20] = "lenna.pgm";
-char OFile[20] = "Out.pgm";
+char ILFile[20] = "lenna.pgm";
+char OLFile[20] = "Out_Lenna.pgm";
 int M;
 int N;
 int Q;
-ReadImage(PFile, picture, M, N, Q);
 
-WriteImage(OFile, myImage, M,  N,  Q);
-	
+float Sig1[5][5];
+float Sig5[25][25];
+float Sig11[55][55];
+
+Sigma1 = new float[5];
+Sigma5 = new float[25];
+Sigma11 = new float[55];
+
+Gauss(1.0, 5 , Sigma1);
+Gauss(5.0, 25, Sigma5);
+Gauss(11.0, 55, Sigma11);
+
+
+//2D Gauss Mask for Sigma 1
+for(int n = 0; n < 5; n++)
+{
+	for(int g = 0; g < 5; g++)
+	{
+		Sig1[n][g] = Sigma1[n] * Sigma1[g];
+	}
+}
+
+//2D Gauss Mask for Sigma 5
+for(int n = 0; n < 25; n++)
+{
+	for(int g = 0; g < 25; g++)
+	{
+		Sig5[n][g] = Sigma5[n] * Sigma5[g];
+	}
+}
+
+//2D Gauss Mask for Sigma 11
+for(int n = 0; n < 55; n++)
+{
+	for(int g = 0; g < 55; g++)
+	{
+		Sig11[n][g] = Sigma11[n] * Sigma11[g];
+	}
+}
+
+cout << endl << "-------2D Gauss on lenna-------" << endl;
+
+ReadImage(ILFile, picture, M, N, Q);
+																		//Do the stuff Here
+
+WriteImage(OLFile, myImage, M,  N,  Q);
+
+///////////////////////////////////////////////////////////////////////
+//Number 1 Part C
+///////////////////////////////////////////////////////////////////////
+int A;
+int B;
+int C;
+
+char ISFile[20] = "sf.pgm";
+char OSFile[20] = "sf.pgm";
+
+cout << endl << "-------2D using 1D Gauss on SF-------" << endl;
+
+ReadImage(ISFile, picture, M, N, Q);
+																		//Do other stuff here
+
+WriteImage(OSFile, myImage, M,  N,  Q);
 
 	return 0;
 	}
