@@ -137,16 +137,16 @@ delete[] Sigma5;
 ///////////////////////////////////////////////////////////////////////
 //Number 1 Part C
 ///////////////////////////////////////////////////////////////////////
+int** myImage;
+int*** picture = &myImage;
+char PFile[20] = "lenna.pgm";
+char OFile[20] = "Out.pgm";
+int M;
+int N;
+int Q;
+ReadImage(PFile, picture, M, N, Q);
 
-
-
-
-
-
-
-	//ReadImage(PFile, lennaMat, M, N, Q);
-
-	//WriteImage(OFile, lennaMat2, A,  B,  C);
+WriteImage(OFile, myImage, M,  N,  Q);
 	
 
 	return 0;
