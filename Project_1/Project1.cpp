@@ -6,6 +6,39 @@
 #define pi 3.141592653589793
 using namespace std;
 
+void readFile(float* dest)
+{
+	ifstream fin("Rect_128.txt");
+
+	//fin.open("Rect_128.txt");
+
+	for(int i = 0; i < 128; i++)
+	{
+
+		fin >> dest[i];
+
+	}
+	fin.close();
+}
+
+float* mask(const float* Oigin, int maskSize, const float* mask)
+{
+	int maskHalf = maskSize / 2;
+	float* result = new float[128];
+
+	for (int i = 0; i < 128; ++i)
+	{
+		result[i] = 0.0;
+		for(int q = -maskHalf; q <= maskHalf; ++q)
+		{
+			if(i + q >= 0 && i + q <= 127)
+			{
+				result[i] += Oigin[i + q] * mask[q + maskHalf];
+			}
+		}
+	}
+	return result;
+}
 
 void ReadImage(char name[], int ***fimage, int& M, int& N, int& Q);
 void WriteImage(char fname[], int **fimage, int M, int N, int Q);
@@ -16,264 +49,102 @@ void Gauss2	 (float s, int Hsize, float ** H);
 
 
 int main()
+{
+	float rect[128];
+	float* Sigma1 = new float [5];
+	float* Sigma5 = new float [25];
+	float* Sigma11 = new float [55];
+
+	float* rect1;
+	float* rect5;
+	float* rect11; 
+
+
+
+	readFile(rect);
+///////////////////////////////////////////////////////////////////////
+//Number 1 Part A
+///////////////////////////////////////////////////////////////////////
+//Sigma 1
+Gauss(1.0, 5, Sigma1);
+cout << "-------Sigma is of size 1-------" << endl;
+rect1 = mask(rect, 5, Sigma1 );
+for( int i = 0; i < 128; ++i )
 	{
-	ifstream fin;
-	ofstream fout;
-	float* rect = new float [128];
-	float* Sigma1 = new float[5];
-	float* Sigma5 = new float[25];
-	float* Sigma11 = new float[55];
-	
-	float* rect1 = new float [128];
-	float* rect5 = new float [128];
-	float* rect11 = new float [128];
-	
-	float* Ix1 = new float [128];
-	float* Ix2 = new float [128];
-			
-	Gauss(1.0, 5, Sigma1);
-	Gauss(5.0, 25, Sigma5);	
-	Gauss(11.0, 55, Sigma11);
-	
-	int sig1_Half = 3;
-	int sig5_Half = 13;
-	int sig11_Half = 28;
-	
-	int sig1_Max = 5;
-	int sig5_Max = 25;
-	int sig11_Max = 55;
-	
-	float temp = 0;
-	int x;
-	int y;
+		cout << rect1[i] * 255.0 << endl;
+	}
+delete[] rect1;
+delete[] Sigma1;
 
-	char PFile[20] = "lenna.pgm";
-	char OFile[20] = "output1.pgm";
-	float **mask1;
+//Sigma 5
+Gauss(5.0, 25, Sigma5);
+cout << endl << endl << "-------Sigma is of size 5-------" << endl;
+rect5 = mask(rect, 25, Sigma5 );
+for(int q = 0; q < 128; q++)
+{
+	cout << rect5[q] * 255.0 << endl;
+}
+delete[] rect5;
+delete[] Sigma5;
 
-	int ***lennaMat;
-	int **lennaMat2;
-	int M = 0;
-	int N = 0;
-	int Q = 0;
-	int A = 0;
-	int B = 0;
-	int C = 0;
-	
-/*	fin.open("Rect_128.txt");
-	for(int i = 0; i < 128; i++)
-		{
-		fin >> rect[i];
-		}
-	fin.close();
-
-	for(int i = 0; i < 128; i++)
-		{
-		cout.precision(5);
-		cout << rect[i] << " ";
-		}
-		cout << endl << endl;
-	///#1///
-	// 1a-sigma 1
-	for (int i = 0; i < 128; i++)
-		{
-		x = 0;
-		y = sig1_Max;
-		
-		if(sig1_Half >= i)
-			{
-			x = sig1_Half - i - 1;  
-			}
-		if(i > 128 - sig1_Half)
-			{
-			y = sig1_Max - (i + 1);
-			}
-			
-		for(int q = x; q < y; q++)
-			{
-			temp = temp + ((Sigma1[q]) * (rect[i - sig1_Half + q + 1]));
-			}
-		
-		rect1[i] = temp;
-		}
-for(int i = 0; i < 5; i++)
-		{
-		cout.precision(9);
-		cout << Sigma1[i] << " ";
-		}
-		cout << endl << endl;
-for(int i = 0; i < 128; i++)
-		{
-		cout.precision(9);
-		cout << rect1[i] << " ";
-		}
-		cout << endl << endl;
-
-	temp = 0;	
-	// 1a-sigma 5
-	for (int i = 0; i < 128; i++)
-		{
-		x = 0;
-		y = sig5_Max;
-		
-		if(sig5_Half >= i)
-			{
-			x = sig5_Half - i - 1;  
-			}
-		if(i > 128 - sig5_Half)
-			{
-			y = sig5_Max - (i + 1);
-			}
-			
-		for(int q = x; q < y; q++)
-			{
-			temp = temp + ((Sigma5[q]) * (rect[i - sig5_Half + q + 1]));
-			}
-		
-		rect5[i] = temp;
-		}
-		for(int i = 0; i < 25; i++)
-		{
-		cout.precision(9);
-		cout << Sigma5[i] << " ";
-		}
-		cout << endl << endl;
-for(int i = 0; i < 128; i++)
-		{
-		cout.precision(9);
-		cout << rect5[i] << " ";
-		}
-		cout << endl << endl;
-
-	temp = 0;
-	// 1a-sigma 11
-	for (int i = 0; i < 128; i++)
-		{
-		x = 0;
-		y = sig11_Max;
-		
-		if(sig11_Half >= i)
-			{
-			x = sig11_Half - i - 1;  
-			}
-		if(i > 128 - sig11_Half)
-			{
-			y = sig11_Max - (i + 1);
-			}
-			
-		for(int q = x; q < y; q++)
-			{
-			temp = temp + ((Sigma11[q]) * (rect[i - sig11_Half + q + 1]));
-			}
-		
-		rect11[i] = temp;
-		}
-
-	for(int i = 0; i < 55; i++)
-		{
-		cout.precision(9);
-		cout << Sigma11[i] << " ";
-		}
-	cout << endl << endl;
-for(int i = 0; i < 128; i++)
-		{
-		cout.precision(9);
-		cout << rect11[i] << " ";
-		}
-		cout << endl << endl;
-	
-	temp = 0;
-	//1b-(Ix * Gx)*Gx
-	for (int i = 0; i < 128; i++)
-		{
-		x = 0;
-		y = sig5_Max;
-		
-		if(sig5_Half >= i)
-			{
-			x = sig5_Half - i - 1;  
-			}
-		if(i > 128 - sig5_Half)
-			{
-			y = sig5_Max - (i + 1);
-			}
-			
-		for(int q = x; q < y; q++)
-			{
-			temp = temp + ((Sigma5[q]) * (rect5[i - sig5_Half + q + 1]));
-			}
-		
-		Ix1[i] = temp;
-		}
-	for(int i = 0; i < 128; i++)
-		{
-		cout.precision(9);
-		cout << Ix1[i] << " ";
-		}
-		cout << endl << endl;
+//Sigma 11
+Gauss(11.0, 55, Sigma11);
+cout << endl << "-------Sigma is of size 11-------" << endl;
+rect11 = mask(rect, 55, Sigma11 );
+for(int q = 0; q < 128; q++)
+{
+	cout << rect11[q] * 255.0 << endl;
+}
+delete[] rect11;
+delete[] Sigma11;
 
 
-	temp = 0;
-	//1b - Ix * (Gx * Gx)
-	Gauss(5.0, 25, Sigma5);
 
-	for (int i = 0; i < 128; i++)
-		{
-		x = 0;
-		y = sig5_Max;
-		
-		if(sig5_Half >= i)
-			{
-			x = sig5_Half - i - 1;  
-			}
-		if(i > 128 - sig5_Half)
-			{
-			y = sig5_Max - (i + 1);
-			}
-			
-		for(int q = x; q < y; q++)
-			{
-			temp = temp + ((Sigma5[q]) * (rect5[i - sig5_Half + q + 1]));
-			}
-		
-		Ix2[i] = temp;
-		}
+///////////////////////////////////////////////////////////////////////
+//Number 1 Part B
+///////////////////////////////////////////////////////////////////////
+cout << endl << "-------Sigma is of size 5 Twice-------" << endl;
+float* Ix1;
 
-	for(int i = 0; i < 128; i++)
-		{
-		cout.precision(9);
-		cout << Ix2[i] << " ";
-		}
-		cout << endl << endl;*/
+Sigma5 = new float[25];
+Gauss(5.0, 25, Sigma5);
+
+rect5 = mask(rect, 25, Sigma5);
+Ix1 = mask(rect5, 25, Sigma5);
+for(int q = 0; q < 128; q++)
+{
+	cout << Ix1[q] * 255.0 << endl;
+}
+delete[] Ix1;
+delete[] rect5;
 
 
-		//1c
-	
-	/*for(int i = 0; i < 5; i++)
-		{
-		cout.precision(9);
-		cout << Sigma1[i] << " ";
-		}
-		cout << endl << endl;
-	for(int i = 0; i < 25; i++)
-		{
-		cout.precision(9);
-		cout << Sigma5[i] << " ";
-		}
-		cout << endl << endl;
-	for(int i = 0; i < 55; i++)
-		{
-		cout.precision(9);
-		cout << Sigma11[i] << " ";
-		}
-	cout << endl << endl;
-	for(int i = 0; i < 128; i++)
-		{
-		cout.precision(5);
-		cout << rect[i] << " ";
-		}*/
+cout << endl << "-------Sigma is of size 5*root(2)-------" << endl;
+float* Ix2;
 
-	ReadImage(PFile, lennaMat, M, N, Q);
+Gauss(5.0, 25, Sigma5);
+
+Ix2 = mask(rect, 25, Sigma5);
+for(int q = 0; q < 128; q++)
+{
+	cout << Ix2[q] * 255.0 << endl;
+}
+delete[] Ix2;
+delete[] Sigma5;
+
+
+
+///////////////////////////////////////////////////////////////////////
+//Number 1 Part C
+///////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+	//ReadImage(PFile, lennaMat, M, N, Q);
 
 	//WriteImage(OFile, lennaMat2, A,  B,  C);
 	
@@ -286,44 +157,32 @@ for(int i = 0; i < 128; i++)
 void Gauss (float s, int Hsize, float * H)
 
 {
-  /* Create a one-dimensional Gaussian mask
+  
+/* Create a one-dimensional Gaussian mask
  "H" of scale "s" (sigma) on "Hsize" pixels.
 
    The values of the mask are scaled so that the
  sum of mask values = 1.0 
 */
-
-	int     i;
-  
-	float  cst,tssq,x,sum;
- 
+	int     i;  
+	float  cst,tssq,x,sum; 
   
 	
-	cst=1./(s*sqrt(2.0*pi));
+	cst=1./(s*sqrt(2.0*pi));  
+	tssq=1./(2*s*s); 
   
-	tssq=1./(2*s*s);
- 
-  
-	for (i=0; i<Hsize; i++) 
-	{
-    
-		x=(float)(i-Hsize/2);
-    
-		H[i]=(cst*exp(-(x*x*tssq)));
-  
-	}
- 
+	for (i=0; i<Hsize; i++)
+	{    
+		x=(float)(i-Hsize/2);    
+		H[i]=(cst*exp(-(x*x*tssq)));  
+	} 
   	
-	sum=0.0;
-  
-	for (i=0;i<Hsize;i++)
-    
+	sum=0.0;  
+	for (i=0;i<Hsize;i++)    
 		sum += H[i];
   
-	for(i=0;i<Hsize;i++)
-    
+	for(i=0;i<Hsize;i++)    
 	H[i] /= sum;
-
 }
 
 
@@ -408,6 +267,7 @@ void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
  Q=strtol(header,&ptr,0);
 
  image = (unsigned char *) new unsigned char [M*N];
+
  *fimage = new int* [N];
  for(i=0; i<N; i++)
    (*fimage)[i] = new int[M];
@@ -432,10 +292,9 @@ void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
 
 
 
+
 void WriteImage(char fname[], int **fimage, int M, int N, int Q)
 {
-	 																		cout << "I hope we Got here" << endl;
-
  int i, j;
  unsigned char *image;
  ofstream ofp;
@@ -443,11 +302,10 @@ void WriteImage(char fname[], int **fimage, int M, int N, int Q)
  image = (unsigned char *) new unsigned char [M*N];
 
  // convert the integer values to unsigned char
- 																			cout << "Got here" << endl;
+
  for(i=0; i<N; i++)
    for(j=0; j<M; j++)
      image[i*M+j]=(unsigned char)fimage[i][j];
- 																			cout << "And here" << endl;
 
  ofp.open(fname, ios::out);
 
@@ -455,7 +313,6 @@ void WriteImage(char fname[], int **fimage, int M, int N, int Q)
    cout << "Can't open file: " << fname << endl;
    exit(1);
  }
- 																			cout << "Also here" << endl;
 
  ofp << "P5" << endl;
  ofp << M << " " << N << endl;
@@ -471,11 +328,3 @@ void WriteImage(char fname[], int **fimage, int M, int N, int Q)
  ofp.close();
 
 }
-
-
-
-
-
-
-
-
