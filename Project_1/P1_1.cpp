@@ -1,3 +1,10 @@
+/*//////////////////////////////////////////////////////////////////
+Project 1
+Problem 1
+Nicholas Smith
+Collaboration with Brian Goga
+//////////////////////////////////////////////////////////////////*/
+
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -69,7 +76,7 @@ cout << "-------Sigma is of size 1-------" << endl;
 rect1 = mask(rect, 5, Sigma1 );
 for( int i = 0; i < 128; ++i )
 	{
-		cout << rect1[i] * 255.0 << endl;
+		cout << rect1[i] * 255.0 << ", ";
 	}
 delete[] rect1;
 delete[] Sigma1;
@@ -80,18 +87,18 @@ cout << endl << endl << "-------Sigma is of size 5-------" << endl;
 rect5 = mask(rect, 25, Sigma5 );
 for(int q = 0; q < 128; q++)
 {
-	cout << rect5[q] * 255.0 << endl;
+	cout << rect5[q] * 255.0 << ", ";
 }
 delete[] rect5;
 delete[] Sigma5;
 
 //Sigma 11
 Gauss(11.0, 55, Sigma11);
-cout << endl << "-------Sigma is of size 11-------" << endl;
+cout << endl << endl << "-------Sigma is of size 11-------" << endl;
 rect11 = mask(rect, 55, Sigma11 );
 for(int q = 0; q < 128; q++)
 {
-	cout << rect11[q] * 255.0 << endl;
+	cout << rect11[q] * 255.0 << ", ";
 }
 delete[] rect11;
 delete[] Sigma11;
@@ -101,7 +108,7 @@ delete[] Sigma11;
 ///////////////////////////////////////////////////////////////////////
 //Number 1 Part B
 ///////////////////////////////////////////////////////////////////////
-cout << endl << "-------Sigma is of size 5 Twice-------" << endl;
+cout << endl << endl << "-------Sigma is of size 5 Twice-------" << endl;
 float* Ix1;
 
 Sigma5 = new float[25];
@@ -111,13 +118,13 @@ rect5 = mask(rect, 25, Sigma5);
 Ix1 = mask(rect5, 25, Sigma5);
 for(int q = 0; q < 128; q++)
 {
-	cout << Ix1[q] * 255.0 << endl;
+	cout << Ix1[q] * 255.0 << ", ";
 }
 delete[] Ix1;
 delete[] rect5;
 
 
-cout << endl << "-------Sigma is of size 5*root(2)-------" << endl;
+cout << endl << endl << "-------Sigma is of size 5*root(2)-------" << endl;
 float* Ix2;
 
 Gauss(5.0, 25, Sigma5);
@@ -125,7 +132,7 @@ Gauss(5.0, 25, Sigma5);
 Ix2 = mask(rect, 25, Sigma5);
 for(int q = 0; q < 128; q++)
 {
-	cout << Ix2[q] * 255.0 << endl;
+	cout << Ix2[q] * 255.0 << ", ";
 }
 delete[] Ix2;
 delete[] Sigma5;
@@ -191,7 +198,7 @@ for(int n = 0; n < 55; n++)
 	}
 }
 
-cout << endl << "-------2D Gauss on lenna-------" << endl;
+cout << endl << endl << "-------2D Gauss on lenna-------" << endl;
 
 ReadImage(ILFile, &myImage, M, N, Q);
 
