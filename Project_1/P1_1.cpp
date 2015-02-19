@@ -140,9 +140,9 @@ int** ImageSig;
 int** TempImage;
 
 char ILFile[20] = "lenna.pgm";
-char OLFile1[20] = "Out_Lenna.pgm";
-char OLFile5[20] = "Out_Lenna5.pgm";
-char OLFile11[20] = "Out_Lenna11.pgm";
+char OLFile1[20] = "2D_lenna1.pgm";
+char OLFile5[20] = "2D_Lenna5.pgm";
+char OLFile11[20] = "2D_Lenna11.pgm";
 
 int M;
 int N;

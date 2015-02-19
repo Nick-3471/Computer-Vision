@@ -66,6 +66,7 @@ int main()
 	ReadImage(LFile, &myImageL, M, N, Q);
 	ReadImage(SFFile, &myImageSF, A, B, C);
 
+//Initializing
 Image_lennaX = new int* [N];
 Image_lennaXX = new int* [N];
 Image_lennaY = new int* [N];
@@ -423,6 +424,13 @@ WriteImage(TSFout, Image_sfM, M,  N,  Q);
 	return 0;
 }
 
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+//Functions
+///////////////////////////////////////////////////////////////////////
 void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
 {
  int i, j;
