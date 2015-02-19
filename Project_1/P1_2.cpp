@@ -23,12 +23,23 @@ int main()
 	int** SFImage;
 
 	//Output
-	int** Image_lenna;
-	int** Image_sf;
+	int** Image_lennaX;
+	int** Image_lennaXX;
+	int** Image_lennaY;
+	int** Image_lennaYY;
+	int** Image_lennaM;
+	int** Image_lennaD;
+
+	int** Image_sfX;
+	int** Image_sfXX;
+	int** Image_sfY;
+	int** Image_sfYY;
+	int** Image_sfM;
+	int** Image_sfD;
 
 	int M, N, Q;
 	int A, B, C;
-	int S;
+	float S;
 
 	//Read in name
 	char LFile[10] = "lenna.pgm";
@@ -48,27 +59,51 @@ int main()
 	char TSFout[20] = "SF_T.pgm";
 
 	//Soble Masks X & Y
-	int SobelX[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
-	int SobelY[3][3] = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
+	float SobelX[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+	float SobelY[3][3] = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
 
 	//Read in images
 	ReadImage(LFile, &myImageL, M, N, Q);
 	ReadImage(SFFile, &myImageSF, A, B, C);
 
-Image_lenna = new int* [N];
-Image_sf = new int* [N];
+Image_lennaX = new int* [N];
+Image_lennaXX = new int* [N];
+Image_lennaY = new int* [N];
+Image_lennaYY = new int* [N];
+Image_lennaM = new int* [N];
+Image_lennaD = new int* [N];
+
+Image_sfX = new int* [N];
+Image_sfXX = new int* [N];
+Image_sfY = new int* [N];
+Image_sfYY = new int* [N];
+Image_sfM = new int* [N];
+Image_sfD = new int* [N];
+
 LImage = new int* [N];
 SFImage = new int* [N];
 for(int i=0; i<N; i++)
 {
-	(Image_lenna)[i] = new int[M];
-	(Image_sf)[i] = new int[M];
+	(Image_lennaX)[i] = new int[M];
+	(Image_lennaXX)[i] = new int[M];
+	(Image_lennaY)[i] = new int[M];
+	(Image_lennaYY)[i] = new int[M];
+	(Image_lennaM)[i] = new int[M];
+	(Image_lennaD)[i] = new int[M];
+
+	(Image_sfX)[i] = new int[M];
+	(Image_sfXX)[i] = new int[M];
+	(Image_sfY)[i] = new int[M];
+	(Image_sfYY)[i] = new int[M];
+	(Image_sfM)[i] = new int[M];
+	(Image_sfD)[i] = new int[M];
+
 	(LImage)[i] = new int[M];
 	(SFImage)[i] = new int[M];
 }
 
 //Smooth
-float* Sigma1 = new float[5];
+float* Sigma1 = new float[25];
 float Sig1[5][5];
 
 Gauss(1.0, 5 , Sigma1);
@@ -85,7 +120,7 @@ for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 5; z++)
 		{
 			for(int h = 0; h < 5; h++)
@@ -93,7 +128,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 5 / 2) < 0 || (r - z + 5 / 2) >= N || 
 					(t - h + 5 / 2) < 0 || (t - h + 5 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -110,7 +145,7 @@ for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 5; z++)
 		{
 			for(int h = 0; h < 5; h++)
@@ -118,7 +153,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 5 / 2) < 0 || (r - z + 5 / 2) >= N || 
 					(t - h + 5 / 2) < 0 || (t - h + 5 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -141,7 +176,7 @@ for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 3; z++)
 		{
 			for(int h = 0; h < 3; h++)
@@ -149,7 +184,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 3 / 2) < 0 || (r - z + 3 / 2) >= N || 
 					(t - h + 3 / 2) < 0 || (t - h + 3 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -157,18 +192,18 @@ for(int t = 0; t < N; t++)
 				}
 			}
 		}
-		Image_lenna[r][t] = S;
+		Image_lennaX[r][t] = S;
 	}
 }
-WriteImage(XLout, Image_lenna, M,  N,  Q);
+WriteImage(XLout, Image_lennaX, M,  N,  Q);
 
-//Sobel Y mask sf
+//Sobel X mask sf
 cout << "---Applying Sx Mask to sf---" <<endl;
 for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 3; z++)
 		{
 			for(int h = 0; h < 3; h++)
@@ -176,7 +211,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 3 / 2) < 0 || (r - z + 3 / 2) >= N || 
 					(t - h + 3 / 2) < 0 || (t - h + 3 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -184,23 +219,23 @@ for(int t = 0; t < N; t++)
 				}
 			}
 		}
-		Image_sf[r][t] = S;
+		Image_sfX[r][t] = S;
 	}
 }
-WriteImage(XSFout, Image_sf, M,  N,  Q);
+WriteImage(XSFout, Image_sfX, M,  N,  Q);
 
 
 ///////////////////////////////////////////////////////////////////////
 //Number 2 Part B
 ///////////////////////////////////////////////////////////////////////
-//Soble X mask Lenna
-cout << "---Applying Sx Mask to lenna---" <<endl;
+//Soble Y mask Lenna
+cout << "---Applying Sy Mask to lenna---" <<endl;
 
 for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 3; z++)
 		{
 			for(int h = 0; h < 3; h++)
@@ -208,7 +243,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 3 / 2) < 0 || (r - z + 3 / 2) >= N || 
 					(t - h + 3 / 2) < 0 || (t - h + 3 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -216,18 +251,18 @@ for(int t = 0; t < N; t++)
 				}
 			}
 		}
-		Image_lenna[r][t] = S;
+		Image_lennaY[r][t] = S;
 	}
 }
-WriteImage(YLout, Image_lenna, M,  N,  Q);
+WriteImage(YLout, Image_lennaY, M,  N,  Q);
 
 //Sobel Y mask sf
-cout << "---Applying Sx Mask to sf---" <<endl;
+cout << "---Applying Sy Mask to sf---" <<endl;
 for(int t = 0; t < N; t++)
 {
 	for(int r = 0; r < M; r++)
 	{
-		S = 0;
+		S = 0.0;
 		for(int z = 0; z < 3; z++)
 		{
 			for(int h = 0; h < 3; h++)
@@ -235,7 +270,7 @@ for(int t = 0; t < N; t++)
 				if( (r - z + 3 / 2) < 0 || (r - z + 3 / 2) >= N || 
 					(t - h + 3 / 2) < 0 || (t - h + 3 / 2) >= M )
 				{
-					S += 0;
+					S += 0.0;
 				}
 				else
 				{
@@ -243,10 +278,97 @@ for(int t = 0; t < N; t++)
 				}
 			}
 		}
-		Image_sf[r][t] = S;
+		Image_sfY[r][t] = S;
 	}
 }
-WriteImage(YSFout, Image_sf, M,  N,  Q);
+WriteImage(YSFout, Image_sfY, M,  N,  Q);
+
+
+///////////////////////////////////////////////////////////////////////
+//Number 2 Part C
+///////////////////////////////////////////////////////////////////////
+cout << "---Acquiring mag of lenna---" <<endl;
+
+
+//Squaring X
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		for(int i = 0; i < M; i++)
+		{
+			Image_lennaXX[r][c] += (Image_lennaX[r][i] * Image_lennaX[i][c]); 
+		}
+	}
+}
+
+// Squaring Y
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		for(int i = 0; i < M; i++)
+		{
+			Image_lennaYY[r][c] += (Image_lennaY[r][i] * Image_lennaY[i][c]); 
+		}
+	}
+}
+
+//Adding both into M
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_lennaM[r][c] = (sqrt(Image_lennaXX[r][c] + Image_lennaYY[r][c]));
+	}
+}
+cout << Image_lennaXX[34][34] << " "<< Image_lennaYY[34][34] << endl;	
+
+WriteImage(MLout, Image_lennaM, M,  N,  Q);
+
+
+
+///////////////////////////////////////////////////////////////////////
+//Number 2 Part D
+///////////////////////////////////////////////////////////////////////
+cout << "---Acquiring gradient direction  of lenna---" <<endl;
+
+//Tangent
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_lennaD[r][c] = atan2(Image_lennaY[r][c], Image_lennaX[r][c]);
+	}
+}
+WriteImage(DLout, Image_lennaD, M,  N,  Q);
+
+
+///////////////////////////////////////////////////////////////////////
+//Number 2 Part E
+///////////////////////////////////////////////////////////////////////
+cout << "---Acquiring threshold of lenna---" <<endl;
+
+int thresh;
+
+cout << "Enter threshold value: ";
+cin >> thresh;
+
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		if(Image_lennaM[r][c] < thresh)
+		{
+			Image_lennaM[r][c] = 0;
+		}
+	}
+}
+
+WriteImage(TLout, Image_lennaM, M,  N,  Q);
+
+
+
 
 
 	return 0;
