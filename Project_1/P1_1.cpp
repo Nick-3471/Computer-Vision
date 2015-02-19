@@ -147,7 +147,7 @@ char OLFile11[20] = "Out_Lenna11.pgm";
 int M;
 int N;
 int Q;
-int S = 0;
+float S = 0.0;
 
 //Mask Matrix
 float Sig1[5][5];
@@ -254,6 +254,7 @@ for(int t = 0; t < N; t++)
 			}
 		}
 		ImageSig[r][t] = S;
+
 	}
 }
 WriteImage(OLFile5, ImageSig, M,  N,  Q);
@@ -280,6 +281,7 @@ for(int t = 0; t < N; t++)
 				}
 			}
 		}
+
 		ImageSig[r][t] = S;
 	}
 }
