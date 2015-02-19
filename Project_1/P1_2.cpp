@@ -290,31 +290,25 @@ WriteImage(YSFout, Image_sfY, M,  N,  Q);
 cout << "---Acquiring mag of lenna---" <<endl;
 
 
-//Squaring X
+//Squaring X lenna
 for(int r = 0; r < N; r++)
 {
 	for(int c = 0; c < M; c++)
 	{
-		for(int i = 0; i < M; i++)
-		{
-			Image_lennaXX[r][c] += (Image_lennaX[r][i] * Image_lennaX[i][c]); 
-		}
+		Image_lennaXX[r][c] += (Image_lennaX[r][c] * Image_lennaX[r][c]);
 	}
 }
 
-// Squaring Y
+// Squaring Y lenna
 for(int r = 0; r < N; r++)
 {
 	for(int c = 0; c < M; c++)
 	{
-		for(int i = 0; i < M; i++)
-		{
-			Image_lennaYY[r][c] += (Image_lennaY[r][i] * Image_lennaY[i][c]); 
-		}
+		Image_lennaYY[r][c] += (Image_lennaY[r][c] * Image_lennaY[r][c]); 
 	}
 }
 
-//Adding both into M
+//Adding both into M leena
 for(int r = 0; r < N; r++)
 {
 	for(int c = 0; c < M; c++)
@@ -322,11 +316,39 @@ for(int r = 0; r < N; r++)
 		Image_lennaM[r][c] = (sqrt(Image_lennaXX[r][c] + Image_lennaYY[r][c]));
 	}
 }
-cout << Image_lennaXX[34][34] << " "<< Image_lennaYY[34][34] << endl;	
-
 WriteImage(MLout, Image_lennaM, M,  N,  Q);
 
 
+cout << "---Acquiring mag of sf---" <<endl;
+
+
+//Squaring X sf
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_sfXX[r][c] += (Image_sfX[r][c] * Image_sfX[r][c]);
+	}
+}
+
+// Squaring Y lenna
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_sfYY[r][c] += (Image_sfY[r][c] * Image_sfY[r][c]); 
+	}
+}
+
+//Adding both into M sf
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_sfM[r][c] = (sqrt(Image_sfXX[r][c] + Image_sfYY[r][c]));
+	}
+}
+WriteImage(MSFout, Image_sfM, M,  N,  Q);
 
 ///////////////////////////////////////////////////////////////////////
 //Number 2 Part D
@@ -344,6 +366,17 @@ for(int r = 0; r < N; r++)
 WriteImage(DLout, Image_lennaD, M,  N,  Q);
 
 
+cout << "---Acquiring gradient direction  of SF---" <<endl;
+
+//Tangent
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		Image_sfD[r][c] = atan2(Image_sfY[r][c], Image_sfX[r][c]);
+	}
+}
+WriteImage(DSFout, Image_sfD, M,  N,  Q);
 ///////////////////////////////////////////////////////////////////////
 //Number 2 Part E
 ///////////////////////////////////////////////////////////////////////
@@ -351,7 +384,7 @@ cout << "---Acquiring threshold of lenna---" <<endl;
 
 int thresh;
 
-cout << "Enter threshold value: ";
+cout << "Enter threshold value for lenna: ";
 cin >> thresh;
 
 for(int r = 0; r < N; r++)
@@ -367,7 +400,23 @@ for(int r = 0; r < N; r++)
 
 WriteImage(TLout, Image_lennaM, M,  N,  Q);
 
+cout << "---Acquiring threshold of SF---" <<endl;
 
+cout << "Enter threshold value for sf: ";
+cin >> thresh;
+
+for(int r = 0; r < N; r++)
+{
+	for(int c = 0; c < M; c++)
+	{
+		if(Image_sfM[r][c] < thresh)
+		{
+			Image_sfM[r][c] = 0;
+		}
+	}
+}
+
+WriteImage(TSFout, Image_sfM, M,  N,  Q);
 
 
 
