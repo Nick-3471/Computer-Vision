@@ -48,21 +48,7 @@ cin >> MY;
 
 ReadImage(in, &myImage, M, N, Q);
 
-ImageOut = new int* [40];
-for(int i = 0; i < 40; i++)
-{
-	(ImageOut)[i]= new int[48];
-}
 
-for(int q = 0; q < 40; q++)
-{
-	for(int z = 0; z < 48; z++)
-	{
-		ImageOut[q][z] = myImage[LEX + q - 6][LEY + z];
-	}
-}
- WriteImage(out, ImageOut, M, N ,Q);
-cout << "Got here" << endl;
 
 	return 0;
 }

@@ -1,29 +1,8 @@
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <cmath>
-#include <cstddef>
-#include <cstdio>
-
-#define NRANSI
-#define NR_END 1
-#define FREE_ARG char*
-
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#define SQR(a) ((a)*(a))
-#define SIGN(a,b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
-#define IMIN(a,b) ((a) < (b) ? (a) : (b))
-
-#include "svdcmp.c"
-#include "svbksb.c"
-#include "solve_system.c"
+#include <iostream.h>
+#include <fstream.h>
+#include <stdlib.h>
 
 
-using namespace std;
-
-////////////////////////////////////////////////////////////////////////////////////////////
-//Read Image
-///////////////////////////////////////////////////////////////////////////////////////////
 void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
 {
  int i, j;
@@ -84,9 +63,7 @@ void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////
-//Write Image
-///////////////////////////////////////////////////////////////////////////////////////////
+
 void WriteImage(char fname[], int **fimage, int M, int N, int Q)
 {
  int i, j;

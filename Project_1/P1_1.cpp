@@ -492,7 +492,7 @@ void ReadImage(char fname[], int ***fimage, int& M, int& N, int& Q)
  ifp.getline(header,100,'\n');
  if ( (header[0]!=80) ||    /* 'P' */
       (header[1]!=53) ) {   /* '5' */
-      cout << "Image " << fname << " is not PGM" << endl;
+           cout << "Image " << fname << " is not PGM" << endl;
       exit(1);
  }
 
