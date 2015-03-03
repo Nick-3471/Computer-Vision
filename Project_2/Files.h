@@ -97,9 +97,9 @@ void WriteImage(char fname[], int **fimage, int M, int N, int Q)
 
  // convert the integer values to unsigned char
 
- for(i=0; i<N; i++)
-   for(j=0; j<M; j++)
-     image[i*M+j]=(unsigned char)fimage[i][j];
+ for(i=0; i<56; i++)
+   for(j=0; j<46; j++)
+     image[i*46+j]=(unsigned char)fimage[i][j];
 
  ofp.open(fname, ios::out);
 
@@ -109,7 +109,7 @@ void WriteImage(char fname[], int **fimage, int M, int N, int Q)
  }
 
  ofp << "P5" << endl;
- ofp << M << " " << N << endl;
+ ofp << 46 << " " << 56 << endl;
  ofp << Q << endl;
 
  ofp.write( reinterpret_cast<char *>(image), (M*N)*sizeof(unsigned char));

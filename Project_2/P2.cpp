@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////
 // Nicholas Smith
 // Project 1
-// CS 485
+// CS 565
 /////////////////////////////////////////////////////////////////////
 
 #include "Files.h"
@@ -13,11 +13,10 @@ using namespace std;
 int main()
 {
 
-int** myImage;
-char in[20] = "1.pgm";
+char in[20];
 char out[20] = "image.pgm";
 
-int** ImageOut;
+int **ImageIn, **ImageTrans, **ImageCrop;
 
 float **data, **A, **B, **X;
 
@@ -34,6 +33,8 @@ int LEDX, LEDY;
 int REDX, REDY;
 int MDX, MDY;
 
+cout << "Enter File Name: ";
+cin >> in;
 
 cout << endl << "Enter Left Eye Start X: ";
 cin >> LESX;
@@ -66,9 +67,13 @@ cin >> NX;
 cout  << "Enter Nose y: ";
 cin >> NY;
 
-ReadImage(in, &myImage, M, N, Q);
+ReadImage(in, &ImageIn, M, N, Q);
 
+////////////////////////////////////////////////////////////////////////////////////////
+//Transformation
+////////////////////////////////////////////////////////////////////////////////////////
 
+//Initalizing Transformation matrix
 data = new float* [4];
 for (int i = 0; i < 4; i++)
 {
@@ -98,6 +103,7 @@ for (int i = 0; i < 4; i++)
 	}
 }
 
+//Filling Matrix A
 A[1][1] = LEDX;
 A[1][2] = LEDY;
 A[1][3] = 1.f;
@@ -110,7 +116,8 @@ A[3][1] = MDX;
 A[3][2] = MDY;
 A[3][3] = 1.f;
 
-//Formatting B
+
+//Initalizing matrix B
 B = new float* [4];
 for (int i = 0; i < 4; i++)
 {
@@ -143,7 +150,7 @@ X_ptr = new float[4];
 solve_system(3, 3, A, X_ptr, B_ptr);
 delete []B_ptr;
 
-//Format X
+//Initializing X
 X = new float* [4];
 for (int i = 0; i < 4; i++)
 {
@@ -163,7 +170,7 @@ for(int q = 0; q < 4; q++)
 } 
 delete []X_ptr;
 
-//Transformation
+//Filling Transformation
 data[1][1] = X[1][1];
 data[1][2] = X[2][1];
 data[1][3] = X[3][1];
@@ -188,7 +195,7 @@ X_ptr = new float[4];
 solve_system(3, 3, A, X_ptr, B_ptr);
 delete []B_ptr;
 
-//Format X
+//Initializing X
 X = new float* [4];
 for (int i = 0; i < 4; i++)
 {
@@ -208,29 +215,75 @@ for(int q = 0; q < 4; q++)
 } 
 delete []X_ptr;
 
-//Transformation
+//Filling Transformation
 data[2][1] = X[1][1];
 data[2][2] = X[2][1];
 data[2][3] = X[3][1];
 
-
-
-
-
 //Print
 for (int i = 1; i < 4; i++)
-  {
-    for (int q = 1; q < 4; q++)
-    {
-      cout << data[i][q] << "    ";
-    }
-    cout << endl;
-  }
-  cout << endl;
+{
+	for (int q = 1; q < 4; q++)
+	{
+		cout << data[i][q] << "    ";
+	}
+	cout << endl;
+}
+cout << endl;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//Image
+////////////////////////////////////////////////////////////////////////////////////////////
+int X_scr, Y_scr;
+
+//Initializing ImageTrans
+ImageTrans = new int* [92];
+for (int i = 0; i < 92; i++)
+{
+	(ImageTrans)[i] = new int[112];
+}
 
 
+//Transforming image using the reverse
+for(int i = 0; i < 112; i++)
+{
+	for(int j = 0; j < 92; j++)
+	{
+		X_scr = j * data[1][1] + i * data[1][2] + data[1][3];
+		Y_scr = j * data[2][1] + i * data[2][2] + data[2][3];
+
+		if(X_scr >= 0 && X_scr < 92 && Y_scr >=0 && Y_scr < 112)
+		{
+			ImageTrans[j][i] = ImageIn[Y_scr][X_scr];
+
+		}
+		else
+		{
+			ImageTrans[j][i] = 0;
+
+		}
+	}
+}
 
 
+//Initializing Crop image
+ImageCrop = new int* [56];
+for (int i = 0; i < 56; i++)
+{
+	(ImageCrop)[i] = new int[46];
+}
+
+// Cropping the image
+for(int i = 0; i < 56; i++)
+{
+	for(int j = 0; j < 46; j++)
+	{
+		ImageCrop[i][j] = ImageTrans[j + 0][i + 0];
+	}
+}
+
+
+WriteImage(out, ImageCrop, M, N, Q);
 
 	return 0;
 }
