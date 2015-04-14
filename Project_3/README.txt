@@ -16,6 +16,6 @@ Output:
 		- Will put the Ix^2, Iy^2, IxIy
 			R(Aw), Local Maxima, and the Corner dection of the orignial image
 			for Test1, Test2, and Test3 into the orignial Test Folder
-	-2
-		Will put the Harris-Laplace Dectctor Graf and Boat into their 
+	- 2
+		- Will put the Harris-Laplace Dectctor Graf and Boat into their 
 			respective original folders 
