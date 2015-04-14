@@ -6,6 +6,7 @@
 using namespace std;
 
 ImageP5 RImage(float, const ImageP5&, const ImageP5&, const ImageP5&);
+ImageP5 RImage2(float, const ImageP5&, const ImageP5&, const ImageP5&);
 ImageP5 LocalMaxima(const ImageP5&);
 ImageP5 CornerOverlay( ImageP5&, ImageP5&);
 
@@ -32,6 +33,9 @@ int main(int argc, char** argv)
 	ImageP5 Ix = image.convolveX(SigmaFirstD);
 	ImageP5 Iy = image.convolveY(SigmaFirstD);
 
+	Ix.writeImageP5((filename + "_Ix").c_str());
+	Iy.writeImageP5((filename + "_Iy").c_str());
+
 	/* Ix2, Iy2, & IxIy */
 	ImageP5 Ix2 = Ix.multiply(Ix);
 	ImageP5 Iy2 = Iy.multiply(Iy);
@@ -48,9 +52,15 @@ int main(int argc, char** argv)
 	ImageP5 Iy2_Con = Iy2.convolve(SigmaG);
 	ImageP5 IxIy_Con = IxIy.convolve(SigmaG);
 
+	Ix2_Con.writeImageP5((filename + "_Ix2_Con").c_str());
+	Iy2_Con.writeImageP5((filename + "_Iy2_Con").c_str());
+	IxIy_Con.writeImageP5((filename + "_IxIy_Con").c_str());
+
 	/* Compute R(Aw) */
 	ImageP5 rImage = RImage(0.06, Ix2_Con, Iy2_Con, IxIy_Con);
-	rImage.writeImageP5((filename + "_R(Aw).pgm").c_str());
+	ImageP5 rImage2 = RImage2(0.06, Ix2_Con, Iy2_Con, IxIy_Con);
+	rImage2.writeImageP5((filename + "_R(Aw).pgm").c_str());
+	rImage.writeImageP5((filename + "_R(Aw)-Thresh.pgm").c_str());
 
 	/* Compute R(Aw) after a 3x3 Max */
 	ImageP5 LocMax = LocalMaxima(rImage);
@@ -99,6 +109,30 @@ ImageP5 RImage(float alpha, const ImageP5& Ix2, const ImageP5& Iy2, const ImageP
 		for(int j = 0; j < width; j++)
 		{
 			if( RAw.at(i,j) <= Max ) { RAw.at(i,j) = 0.0; }
+		}
+	}
+	return RAw;
+}
+
+ImageP5 RImage2(float alpha, const ImageP5& Ix2, const ImageP5& Iy2, const ImageP5& IxIy)
+{
+	/* Initalize Variables */
+	int width = Ix2.getWidth();
+	int height = Ix2.getHeight();
+	//float determinant, trace;
+	ImageP5 RAw(width, height);
+
+	/* Get R(Aw) */
+	for(int i = 0; i < height; i++)
+	{
+		for(int j = 0; j < width; j++)
+		{
+			float det1 = ( Ix2.at(i,j) * Iy2.at(i,j) );
+			float det2 = ( IxIy.at(i,j) * IxIy.at(i,j) );
+			float det = det1 - det2;
+
+			float trace = Ix2.at(i,j) + Iy2.at(i,j);
+			RAw.at( i, j ) = det - (alpha * trace * trace);
 		}
 	}
 	return RAw;
