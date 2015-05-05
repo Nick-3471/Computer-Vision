@@ -1,0 +1,1 @@
+/home/nick/Desktop/Computer-Vision/Project_4/CMakeFiles/P4.dir
