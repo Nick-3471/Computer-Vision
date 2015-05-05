@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( P4 )
-find_package( OpenCV REQUIRED )
-add_executable( P4 P4.cpp )
-target_link_libraries( P4 ${OpenCV_LIBS} )
